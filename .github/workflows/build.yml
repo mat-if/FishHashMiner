@@ -1,0 +1,55 @@
+on:
+  push:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+    runs-on: windows-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2.4.4
+        id: install-boost
+        with:
+            boost_version: 1.82.0
+            boost_install_dir: 'D:\a\FishHashMiner'
+
+      - name: OpenCL
+        run: |
+          cd ..
+          git clone --recursive https://github.com/KhronosGroup/OpenCL-CLHPP
+          git clone https://github.com/KhronosGroup/OpenCL-ICD-Loader
+          git clone https://github.com/KhronosGroup/OpenCL-Headers
+          cmake -D CMAKE_INSTALL_PREFIX=./OpenCL-Headers/install -S ./OpenCL-Headers -B ./OpenCL-Headers/build
+          cmake --build ./OpenCL-Headers/build --target install
+          cmake -D CMAKE_PREFIX_PATH=D:\a\FishHashMiner\OpenCL-Headers\install -D CMAKE_INSTALL_PREFIX=./OpenCL-ICD-Loader/install -S ./OpenCL-ICD-Loader -B ./OpenCL-ICD-Loader/build
+          cmake --build ./OpenCL-ICD-Loader/build --target install
+          cmake -D CMAKE_PREFIX_PATH="D:\a\FishHashMiner\OpenCL-Headers\install;D:\a\FishHashMiner\OpenCL-ICD-Loader\install" -D CMAKE_INSTALL_PREFIX=./OpenCL-CLHPP/install -S ./OpenCL-CLHPP -B ./OpenCL-CLHPP/build
+          cmake --build ./OpenCL-CLHPP/build --target install
+
+      - name: Build
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+        run: |
+          cmake -D CMAKE_PREFIX_PATH="D:\a\FishHashMiner\OpenCL-Headers\install;D:\a\FishHashMiner\OpenCL-ICD-Loader\install;D:\a\FishHashMiner\OpenCL-CLHPP\install" .
+          cmake --build .
+
+      - name: Move files for artifact
+        run: |
+          mkdir D:\a\FishHashMiner\FishHashMiner\artifact
+          cp D:\a\FishHashMiner\FishHashMiner\Debug\fishHashMiner.exe D:\a\FishHashMiner\FishHashMiner\artifact\fishHashMiner.exe
+          cp -R D:\a\FishHashMiner\FishHashMiner\kernels\ D:\a\FishHashMiner\FishHashMiner\artifact\kernels\
+          cd D:\a\FishHashMiner\FishHashMiner\artifact
+          ls -R
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fishHashMiner
+          path: D:\a\FishHashMiner\FishHashMiner\artifact\
+          if-no-files-found: error
