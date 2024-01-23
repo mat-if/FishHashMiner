@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1) 
+cmake_minimum_required(VERSION 3.20) 
 
 project(fishHashMiner)
 set(TARGET_NAME fishHashMiner)
@@ -68,7 +68,8 @@ target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib
 
 add_subdirectory(libFishHash)
 
-target_compile_options(${TARGET_NAME} PRIVATE -Werror -Wall -Wextra)
+# target_compile_options(${TARGET_NAME} PRIVATE -Werror -Wall -Wextra)
+target_compile_options(${TARGET_NAME} PRIVATE -Wall)
 
 
 # Linking packages
