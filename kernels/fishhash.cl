@@ -393,13 +393,24 @@ __kernel void mine (	__global uint8 * dag,
 	    v.sf = (uint) CHUNK_START;
 	    
 	    // Set the nonce. This might need an adjustment if block header format changes
-	    m.s01 = as_uint2(nonce);	    
+	    // m.s01 = as_uint2(nonce);	    
 	} else if (c == 1) {
 	    v.se = (uint) 64;
 	    v.sf = 0;
 	} else if (c == 2) {
+        //m.sbc = as_uint2(nonce);
+        m.sac = as_uint2(nonce);
 	    v.se = (uint) 52;
 	    v.sf = (uint) CHUNK_END | ROOT;
+
+	    // Set the nonce. This might need an adjustment if block header format changes
+	    // m.s2d = as_uint2(nonce);	    
+	    // m.s2c = as_uint2(nonce);	    
+	    // m.s2b = as_uint2(nonce);	    
+        // m = blockHeader[172];
+        // m.s01 = as_uint2(nonce);
+        // m.sa = as_uint2(nonce);
+
 	}
     	
     	BLAKE_CORE();

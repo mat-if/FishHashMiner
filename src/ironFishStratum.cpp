@@ -270,7 +270,7 @@ workDescription ironFishStratum::getWork(uint64_t neededNonces) {
 void ironFishStratum::handleSolution(workDescription wd, uint64_t nonce) {
 
 	// With the future block header format this might need an amendment to the right position
-	((uint64_t *) wd.header.data())[0] = nonce;	
+	((uint64_t *) wd.header.data())[172] = nonce;	
 	
 	// We perform a CPU check to see the hash validity
 	vector<uint8_t> cpuHash;
@@ -287,14 +287,16 @@ void ironFishStratum::handleSolution(workDescription wd, uint64_t nonce) {
 		
 	// Check if we are fine and submit
 	if (hashValue <= wd.target) {
+		if (debug) cout << "Target met" << hashValue << " ... " << wd.target << endl;
+
 		std::stringstream nonceStr;
 		for (int32_t i=0; i<8; i++) {
-			nonceStr << std::setfill('0') << std::setw(2) << std::hex << (unsigned) wd.header[i];
+			nonceStr << std::setfill('0') << std::setw(2) << std::hex << (unsigned) wd.header[172+i];
 		}
 		
 		std::stringstream graffitiStr;
 		for (int32_t i=0; i<32; i++) {
-			graffitiStr << std::setfill('0') << std::setw(2) << std::hex << (unsigned) wd.header[148+i];
+			graffitiStr << std::setfill('0') << std::setw(2) << std::hex << (unsigned) wd.header[i];
 		}
 		
 		std::stringstream json;
