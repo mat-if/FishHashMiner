@@ -42,7 +42,7 @@ jobs:
       - name: Move files for artifact
         run: |
           mkdir D:\a\FishHashMiner\FishHashMiner\artifact
-          cp D:\a\FishHashMiner\FishHashMiner\Debug\fishHashMiner.exe D:\a\FishHashMiner\FishHashMiner\artifact\fishHashMiner.exe
+          cp D:\a\FishHashMiner\FishHashMiner\Release\fishHashMiner.exe D:\a\FishHashMiner\FishHashMiner\artifact\fishHashMiner.exe
           cp -R D:\a\FishHashMiner\FishHashMiner\kernels\ D:\a\FishHashMiner\FishHashMiner\artifact\kernels\
           cd D:\a\FishHashMiner\FishHashMiner\artifact
           ls -R
